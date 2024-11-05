@@ -1,4 +1,4 @@
-import { Component, ElementRef, Renderer2, ViewChild,AfterViewInit} from '@angular/core';
+import { Component, ElementRef, Renderer2, ViewChild} from '@angular/core';
 import { AutocompleteComponent } from '../autocomplete/autocomplete.component';
 import { AutocompleteComponentTest } from '../autocomplete-test/autocomplete-test.component';
 
@@ -10,7 +10,7 @@ import { AutocompleteComponentTest } from '../autocomplete-test/autocomplete-tes
   templateUrl: './form.component.html',
   styleUrl: './form.component.css'
 })
-export class FormComponent implements AfterViewInit {
+export class FormComponent {
   @ViewChild('street') street!: ElementRef;
   @ViewChild('form') form!: ElementRef;
   @ViewChild(AutocompleteComponent) autocomplete!: AutocompleteComponent;
@@ -22,12 +22,9 @@ export class FormComponent implements AfterViewInit {
     private renderer: Renderer2,
   ) {}
 
-  ngAfterViewInit(){
-    this.autocompleteTest.City.nativeElement.optionSelected.subscribe(()=>{
-      console.log(this.autocompleteTest.fullState);
-      this.autocomplete.state.nativeElement.value = this.autocompleteTest.fullState;
-    });
-    
+  onfullStateReady(fullState: string){
+    console.log(fullState);
+    this.autocomplete.state.nativeElement.value = fullState;
   }
 
   validateStreet(){
@@ -46,7 +43,10 @@ export class FormComponent implements AfterViewInit {
     }
     if(this.autocomplete.state.nativeElement.value !== ''){
       this.renderer.removeClass(this.autocomplete.state.nativeElement, 'is-invalid');
-  }
+    }
+    if(this.autocompleteTest.City.nativeElement.value !== ''){
+      this.renderer.removeClass(this.autocompleteTest.City.nativeElement, 'is-invalid');
+    }
 }
   
 }

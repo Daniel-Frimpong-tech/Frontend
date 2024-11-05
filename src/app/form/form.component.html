@@ -16,7 +16,7 @@
       <div class="row justify-content-md-center">
         <label for="city" class="col-sm-2 col-form-label">City<span class="text-danger">*</span></label>
         <div class="col-sm-7">
-          <app-autocomplete-test></app-autocomplete-test>
+          <app-autocomplete-test (fullStateReady) = "onfullStateReady($event)"></app-autocomplete-test>
           <div class="invalid-feedback">Please enter a valid city</div>
         </div>
       </div>

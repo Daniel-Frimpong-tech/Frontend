@@ -1,4 +1,4 @@
-import {Component, OnInit,ViewChild,Renderer2,ElementRef} from '@angular/core';
+import {Component, OnInit,ViewChild,Renderer2,ElementRef, Output, EventEmitter} from '@angular/core';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {from, Observable, of} from 'rxjs';
 import {startWith, map, debounceTime, switchMap, catchError} from 'rxjs/operators';
@@ -17,7 +17,7 @@ import { PlacesService } from '../places.service';
 export class AutocompleteComponentTest implements OnInit {
   @ViewChild('City') City!: ElementRef;
   
-
+  @Output() fullStateReady = new EventEmitter<string>();
 
   constructor(
     private renderer: Renderer2,
@@ -109,6 +109,8 @@ export class AutocompleteComponentTest implements OnInit {
     this.selectedState = city.state;
     this.City.nativeElement.value = this.selectedCity;
     this.fullState = this.findState(this.selectedState);
+    
+    this.fullStateReady.emit(this.fullState);
   }
 
   findState(key: string){

@@ -1,0 +1,16 @@
+<input type="text"
+placeholder="Search for a State"
+[formControl]="control"
+[matAutocomplete]="auto"
+#state
+(click)="toggleClass()"
+(mouseenter)="checkFormInputs()"
+class="form-control w-50">
+<mat-autocomplete #auto="matAutocomplete">
+@for (state of filteredStates | async; track state) {
+<mat-option [value]="state">{{state}}</mat-option>
+}
+</mat-autocomplete>
+<div class="invalid-feedback">
+    Enter a valid state
+ </div>

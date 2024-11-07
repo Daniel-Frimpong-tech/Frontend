@@ -1,19 +1,18 @@
 <input type="text"
-placeholder="Search for a City"
+placeholder=" "
 [formControl]="control"
 [matAutocomplete]="auto"
 #City
 (click)="toggleClass()"
-(mouseenter)="checkFormInputs()"
+required
 class="form-control w-50">
 <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onCitySelected($event.option.value)">
 @for (City of filteredCitys | async; track City) {
 
-<mat-option [value]="City">{{City.city}}</mat-option>
+<mat-option [value]="City">{{City.city +", "+City.state}}</mat-option>
 }
 </mat-autocomplete>
-<p>State: {{ selectedState }}</p>
-<p>Statefull: {{ fullState }}</p>
+
 <div class="invalid-feedback">
     Enter a valid City
  </div>

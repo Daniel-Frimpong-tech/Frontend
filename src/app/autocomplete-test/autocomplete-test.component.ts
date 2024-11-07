@@ -107,9 +107,9 @@ export class AutocompleteComponentTest implements OnInit {
   onCitySelected(city: any){
     this.selectedCity = city.city;
     this.selectedState = city.state;
-    this.City.nativeElement.value = this.selectedCity;
+    this.City.nativeElement.value = this.selectedCity + ', ' + this.selectedState;
     this.fullState = this.findState(this.selectedState);
-    
+
     this.fullStateReady.emit(this.fullState);
   }
 
@@ -126,9 +126,4 @@ export class AutocompleteComponentTest implements OnInit {
   }
   }
 
-  checkFormInputs(){
-    if (this.City.nativeElement.value === '') {
-      this.renderer.addClass(this.City.nativeElement, 'is-invalid');
-    }
-  }
 }

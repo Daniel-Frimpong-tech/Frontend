@@ -1,5 +1,5 @@
 <div class="container mt-3 justify-content-md-center"> 
-   <ul class="nav nav-pills mb-3 justify-content-md-center" id="pills-tab" role="tablist">
+   <ul class="nav nav-pills mb-3 d-flex justify-content-center" id="pills-tab" role="tablist">
         <li class="nav-item" role="presentation">
         <button class="nav-link active" id="pills-results-tab" data-bs-toggle="pill" data-bs-target="#pills-results" type="button" role="tab" aria-controls="pills-results" aria-selected="true">Results</button>
         </li>
@@ -8,7 +8,15 @@
         </li>
     </ul>
     <div class="tab-content" id="pills-tabContent">
-        <div class="tab-pane fade show active" id="pills-results" role="tabpanel" aria-labelledby="pills-results-tab">charts</div>
-        <div class="tab-pane fade" id="pills-favorite" role="tabpanel" aria-labelledby="pills-favorite-tab">star</div>
+        <div class="tab-pane fade show active" id="pills-results" role="tabpanel" aria-labelledby="pills-results-tab">
+            <div  class="alert alert-danger" #noData role="alert" hidden>
+                An error occurred. Please try again later.
+              </div> 
+              <h1 #Title></h1>
+
+        </div>
+        <div #noRecord class="tab-pane fade" id="pills-favorite" role="tabpanel" aria-labelledby="pills-favorite-tab"><div class="alert alert-warning" role="alert">
+            Sorry. No records found.
+          </div></div>
     </div>
 </div>  

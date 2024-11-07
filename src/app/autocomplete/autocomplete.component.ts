@@ -58,9 +58,5 @@ export class AutocompleteComponent implements OnInit {
   }
   }
 
-  checkFormInputs(){
-    if (this.state.nativeElement.value === '') {
-      this.renderer.addClass(this.state.nativeElement, 'is-invalid');
-    }
-  }
+ 
 }

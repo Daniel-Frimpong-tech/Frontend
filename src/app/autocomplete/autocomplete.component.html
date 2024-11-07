@@ -4,7 +4,7 @@ placeholder="Search for a State"
 [matAutocomplete]="auto"
 #state
 (click)="toggleClass()"
-(mouseenter)="checkFormInputs()"
+required
 class="form-control w-50">
 <mat-autocomplete #auto="matAutocomplete">
 @for (state of filteredStates | async; track state) {

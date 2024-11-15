@@ -10,6 +10,7 @@ export class TomorrowioService {
   getWeather(location: string): Promise<any>{
     var weather = fetch(`http://localhost:3000/api/weather?location=${location}`).then(response => response.json());
     console.log(weather);
+    
     return weather;
   }
 }

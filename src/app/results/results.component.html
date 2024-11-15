@@ -1,3 +1,4 @@
+
 <div class="container mt-3 justify-content-md-center"> 
    <ul class="nav nav-pills mb-3 d-flex justify-content-center" id="pills-tab" role="tablist">
         <li class="nav-item" role="presentation">
@@ -7,16 +8,191 @@
         <button class="nav-link" id="pills-favorite-tab" data-bs-toggle="pill" data-bs-target="#pills-favorite" type="button" role="tab" aria-controls="pills-favorite" aria-selected="false">Favorite</button>
         </li>
     </ul>
-    <div class="tab-content" id="pills-tabContent">
-        <div class="tab-pane fade show active" id="pills-results" role="tabpanel" aria-labelledby="pills-results-tab">
-            <div  class="alert alert-danger" #noData role="alert" hidden>
+<div *ngIf="showDayDetails" class="container">
+   <div class="container " #starButton hidden>
+        <a class="float-end" href="#details" (click)="dayDetails(0)">Details <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"/>
+          </svg></a>
+        <button type="button" class="btn btn-light float-end" style="border: solid 1px rgb(0, 0, 0);" (click)="pushData()"><svg xmlns="http://www.w3.org/2000/svg" stroke="black" stroke-width="1" width="16" height="16" fill="#DDDCC8"  class="bi bi-star" #star viewBox="0 0 16 16">
+            <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+          </svg></button>
+    </div>
+    <div #mainResults class="tab-content" id="pills-tabContent">
+        <div class="tab-pane fade show active flex-column justify-content-center" id="pills-results"  role="tabpanel" aria-labelledby="pills-results-tab">
+            <div  class="alert alert-danger" #noData role="alert" style="width: 100%;" hidden>
                 An error occurred. Please try again later.
-              </div> 
-              <h1 #Title></h1>
+            </div>
+           
+            <div class="container">
+                <div class="d-flex mt-4 justify-content-center" #hideTitle >
+                    <h4 #Title class="h-25" ></h4>
+                </div>
+                <div #resultData hidden>
+                    <nav>
+                        <div class="nav nav-tabs d-flex justify-content-end" id="nav-tab" role="tablist">
+                        <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Day View</button>
+                        <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Daily Temp. Chart</button>
+                        <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Meteogram</button>
+                        </div>
+                    </nav>
+                    <div class="tab-content" id="nav-tabContent" #resDataContent>
+                        <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                        <div class="table-responsive">
+                            <table class="table text-center">
+                                <thead>
+                                  <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Date</th>
+                                    <th scope="col" colspan="2">status</th>
+                                    <th scope="col">Temp. High(˚F)</th>
+                                    <th scope="col">Temp. Low(˚F)</th>
+                                    <th scope="col">Wind Speed(mph)</th>
+                                  </tr>
+                                </thead>
+                                <tbody #tableData>
+                                    <tr *ngFor ="let data of intableData; trackBy:trackItem; let i=index;  ">
+                                        <th scope="row">
+                                            {{i +1}}
+                                        </th>
+                                        <td>
+                                            <a href="#details" (click)="dayDetails(i)">
+                                                {{data.date}}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <img [src]="'assets/'+data.icon" height="20" width="20" alt="img">
+                                        </td>
+                                        <td>
+                                            {{data.iconText}}
+                                        </td>
+                                        <td>
+                                            {{data.maxTemp}}
+                                        </td>
+                                        <td>
+                                            {{data.minTemp}}
+                                        </td>
+                                        <td>
+                                            {{data.windSpeed}}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                              </table>
+                        </div> 
+                        </div>
+                        <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+                            <div #graphOne id="display_charts" class="display_charts"></div>
+                        </div>
+                        <div class="tab-pane fade"  id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+                            <div id="container" #graphTwo class="container"></div>
+                        </div>
+                    </div>                
+                </div>
+                <div class="card">
+                    <div  class="table-responsive"  #details hidden>
+                        <table id="details" class="table table-striped">
+                            <thead class="p-5">
+                              <tr>
+                                <th scope="col">
+                                    <button type="button" class="btn btn-light" (click)="previous()"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/>
+                                      </svg>List</button>
+                                </th>
+                                <th scope="col">{{date}}</th>
+                                <th scope="col" class="justify-content-end">
+                                    <button type="button" class="btn btn-light float-end" (click)="post()"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-twitter-x" viewBox="0 0 16 16">
+                                        <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z"/>
+                                      </svg></button>
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <th scope="row">status</th>
+                                <td colspan="2">{{status}}</td>
+                              </tr>
+                              <tr>
+                                <th scope="row">Temp. High(˚F)</th>
+                                <td colspan="2">{{maxTemp}}</td>
+                              </tr>
+                              <tr>
+                                <th scope="row">Temp. Low(˚F)</th>
+                                <td colspan="2">{{minTemp}}</td>
+                              </tr>
+                              <tr>
+                                <th scope="row">Apparent Temperature</th>
+                                <td colspan="2">{{appTemp}}</td>
+                              </tr>
+                                <tr>
+                                    <th scope="row">Sun Rise Time</th>
+                                    <td colspan="2">{{sunRise}}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Sun Set Time</th>
+                                    <td colspan="2">{{sunSet}}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Humidity</th>
+                                    <td colspan="2">{{humidity}}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Wind Speed</th>
+                                    <td colspan="2">{{windSpeed}}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Visibility</th>
+                                    <td colspan="2">{{visibility}}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Cloud Cover</th>
+                                    <td colspan="2">{{cloudCover}}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3"> <google-map #googleMap [options]="options" style="width: 100% !important;">
+                                        <map-marker [position]="mark"></map-marker>
+                                    </google-map></td>
+                                </tr>
+                            </tbody>
+                          </table>  
+                    </div>
+                </div>  
+            </div>
+            
+            
+            
+            
+                 
+            <div class="container pt-5 d-flex justify-content-center" #progress >   
+            </div>
 
         </div>
-        <div #noRecord class="tab-pane fade" id="pills-favorite" role="tabpanel" aria-labelledby="pills-favorite-tab"><div class="alert alert-warning" role="alert">
-            Sorry. No records found.
-          </div></div>
+        <div #noRecord class="tab-pane fade" id="pills-favorite" role="tabpanel" aria-labelledby="pills-favorite-tab">
+            <div class="alert alert-warning position-relative" role="alert">
+                Sorry. No records found.
+            </div>
+            <div>
+                <div class="card">
+                   <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">City</th>
+                                <th scope="col">State</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                   </div>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 </div>  
+

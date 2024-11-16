@@ -13,12 +13,6 @@ export class BackendcallService {
     console.log(this.retrievedData);
   }
 
- deleteSelected (){
-  this.selectedData = {
-    id: '',
-    data: '',
-  };
- }
 
  getSelectedData(index:any){
   this.selectedData = this.retrievedData[index];
@@ -59,10 +53,12 @@ export class BackendcallService {
   }
 
   async deleteData(id: any){
-
-    const selectedid = this.selectedData.id;
+    this.selectedData = this.retrievedData[id];
+    console.log(this.selectedData);
+    console.log(this.selectedData._id);
+    const selectedid = this.selectedData._id;
     try {
-      const response = await fetch(`http://localhost:3000/api/delete?id=${selectedid}`, {
+      const response = await fetch(`http://localhost:3000/api/delete/${selectedid}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -70,7 +66,6 @@ export class BackendcallService {
       });
       const result = await response.json();
       console.log('Success:', JSON.stringify(result));
-      this.deleteSelected();
     } catch (error) {
       console.error('Error:', error);
       throw error;

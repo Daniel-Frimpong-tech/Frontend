@@ -1,5 +1,3 @@
-import { map } from 'rxjs/operators';
-
 import{animate, state, style, transition, trigger} from '@angular/animations';
 import{GoogleMapsModule} from '@angular/google-maps';
 import { CommonModule } from '@angular/common';
@@ -50,6 +48,7 @@ HC_accessibility(Highcharts);
 export class ResultsComponent{
   
   @ViewChild('noData') noData!: ElementRef;
+  @ViewChild('noRecord') noRec!: ElementRef;
   @ViewChild('progress') progress!: ElementRef;
   @ViewChild('mainResult') mainResult!: ElementRef;
   @ViewChild('resultData') resultData!: ElementRef;
@@ -62,6 +61,9 @@ export class ResultsComponent{
   @ViewChild('starButton') starButton!: ElementRef;
   @ViewChild('star') star!: ElementRef;
   @ViewChild('googleMap', {static: false}) g!: ElementRef;
+  @ViewChild('resBtn') resBtn!: ElementRef;
+  @ViewChild('favBtn') favBtn!: ElementRef;
+  @ViewChild('favtable') favtable!: ElementRef;
 
   options !: google.maps.MapOptions;
   mark : any;
@@ -70,6 +72,7 @@ export class ResultsComponent{
   weeklyData: any[] = [];
   intableData: any[] = [];
   favourite: any[] = [];
+  favdata: any[] = [];
 
   showDayDetails: boolean = false;
 
@@ -93,7 +96,7 @@ constructor(
   private globalState: GlobalStateManagerService,
   private renderer: Renderer2,
   private cd: ChangeDetectorRef,
-  private backend: BackendcallService
+  private backend: BackendcallService,
 ){}
 
 displayState: any;
@@ -107,17 +110,21 @@ display(){
                     <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width: 50%"></div>
                 </div>`
   
+  this.backend.getData();  
+
   setTimeout(()=>
   {
-    if(this.globalState.getState('weatherData').length === 0){
+    if(this.globalState.getState('weatherData').length === 0 || this.globalState.getState('weatherData') === undefined){
       this.renderer.removeAttribute(this.noData.nativeElement, 'hidden');
-      this.renderer.setAttribute(this.mainResult.nativeElement, 'hidden', 'true');
+      this.renderer.setAttribute(this.progress.nativeElement, 'hidden', 'true');
+      this.progress.nativeElement.innerHTML = '';
       return;
-    }else{
+    }
+    if(this.globalState.getState('weatherData').length > 0){
       this.displayContent();
     }
-    
   }, 1000);
+
   }, 200);
   
 
@@ -126,6 +133,9 @@ display(){
   
 
 displayContent(){
+  if(this.backend.retrievedData.length !== 0 || this.backend.retrievedData !== undefined){
+    this.renderer.setAttribute(this.noRec.nativeElement, 'hidden', 'true');
+  }
   this.renderer.removeAttribute(this.resultData.nativeElement,'hidden');
   this.renderer.removeAttribute(this.starButton.nativeElement,'hidden');
   this.renderer.setAttribute(this.progress.nativeElement,'hidden','true');
@@ -142,7 +152,8 @@ displayContent(){
     this.insertData();
     this.graphOne();
     this.graphTwo();
-  },2000);
+    this.checkIfinFav();
+  },1000);
     
   };
 
@@ -151,16 +162,68 @@ displayContent(){
     return item[index];
   }
   
-  
- 
+ arr = []; 
+
+ showDetailBtn(){
+  this.renderer.removeAttribute(this.starButton.nativeElement, 'hidden');
+  this.checkIfinFav();
+ }
+
+
+
 insertFavorite(){
-  setTimeout(()=>{
-    const data = this.backend.retrievedData;
-    this.favourite = data.map((item: any, index: number) => {
-      const city = item.InputCity;
-      const state = item.InputState;
-    });
-  },2000);
+  this.renderer.setAttribute(this.starButton.nativeElement,'hidden','true');
+  this.backend.getData();
+  console.log(this.backend.retrievedData);
+  if(this.backend.retrievedData == 0 || this.backend.retrievedData == undefined || this.backend.retrievedData.length == 0 || this.backend.retrievedData == this.arr){
+    this.renderer.removeAttribute(this.noRec.nativeElement, 'hidden');
+    this.renderer.setAttribute(this.favtable.nativeElement, 'hidden', 'true');
+    return;
+  }else{
+    this.renderer.setAttribute(this.starButton.nativeElement,'hidden','true');
+    this.renderer.removeAttribute(this.favtable.nativeElement, 'hidden');
+    this.renderer.setAttribute(this.noRec.nativeElement, 'hidden', 'true');
+      setTimeout(()=>{
+        this.favdata = this.backend.retrievedData;
+        console.log(this.favdata);
+        this.favourite = this.favdata.map((item: any, index: number) => {
+          const city = item.InputCity;
+          const state = item.InputState;
+          return {index, city, state};
+        });
+      },200);
+  }
+  
+}
+
+SelectSaveData(index: number){
+  const data = this.backend.getSelectedData(index);
+setTimeout(() => {
+  this.globalState.setState('InputCity', data.InputCity);
+  this.globalState.setState('InputState', data.InputState);
+  this.globalState.setState('tomorrowErrorMg', data.tomorrowErrorMg);
+  this.globalState.setState('overralWeatherData', data.overralWeatherData);
+  this.globalState.setState('weatherData', data.weatherData);
+  this.globalState.setState('hourlyWeatherData', data.hourlyWeatherData);
+  this.globalState.setState('icon', data.icon);
+  this.globalState.setState('icontext', data.icontext);
+  this.globalState.setState('weekDetails', data.weekDetails);
+  this.globalState.setState('selectedDayDetails', data.selectedDayDetails);
+  this.globalState.setState('selectedDayStatus', data.selectedDayStatus);
+  this.globalState.setState('location', data.location);
+   setTimeout(() => {
+    this.resBtn.nativeElement.click();
+     this.display();
+   }, 1000);
+}, 500);
+
+}
+
+deleteFav(index: number){
+  this.backend.deleteData(index);
+  setTimeout(() => {
+      this.insertFavorite();
+  }, 500);
 }
 
  insertData(){
@@ -253,16 +316,42 @@ insertFavorite(){
   fav: boolean = false;
 
   async pushData(){
-    if(this.fav===false){
-      const data = this.globalState.getFullState();
-      console.log(data);
-      await this.backend.postData(data);
-      this.fav = true;
+      this.checkIfinFav();
+      if(this.fav===false){
+        const data = this.globalState.getFullState();
+        console.log(data);
+        await this.backend.postData(data);
+        this.fav = true;
+        this.renderer.setAttribute(this.star.nativeElement, 'fill', 'yellow');
+        this.getData();
+      }else{
+        this.fav = false;
+        this.renderer.setAttribute(this.star.nativeElement, 'fill', '#DDDCC8');
+      }
+  
+  }
+
+  checkIfinFav(){
+    this.favdata = this.backend.retrievedData;
+    this.favourite = this.favdata.map((item: any, index: number) => {
+      const city = item.InputCity;
+      const state = item.InputState;
+      return {index, city, state};
+    });
+
+    console.log(this.favourite);
+    const city = this.globalState.getState('InputCity');
+    const state = this.globalState.getState('InputState');
+    console.log(city);
+    console.log(state);
+    const check = this.favourite.some((item: any) => item.city === city && item.state === state);
+    console.log(check);
+    if(check === true){
       this.renderer.setAttribute(this.star.nativeElement, 'fill', 'yellow');
-      this.getData();
+      this.fav = true;
     }else{
-      this.fav = false;
       this.renderer.setAttribute(this.star.nativeElement, 'fill', '#DDDCC8');
+      this.fav = false;
     }
   }
 

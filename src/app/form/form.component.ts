@@ -100,7 +100,7 @@ export class FormComponent {
 
     if(this.autodetectLocation.nativeElement.checked === true){
       this.renderer.removeAttribute(this.search.nativeElement, 'disabled');
-      this.renderer
+      this.autodetectLocation.nativeElement.color ='yellow';
       this.location = this.ipdataService.getIpData().then(data => {
         console.log(data);
         this.location = data.loc.toString();
@@ -125,6 +125,7 @@ export class FormComponent {
     
 }
   onSubmit(){ 
+
     this.results.showDayDetails = true;
     if (this.autodetectLocation.nativeElement.checked === true){
       this.tomorrowioService.getWeather(this.location).then(data => {
@@ -146,12 +147,18 @@ export class FormComponent {
       this.globalState.setState('InputState', this.stateAutoDetect);
     
     }else{  
-    this.geocodeService.getGeocode(this.street.nativeElement.value, this.autocompleteTest.City.nativeElement.value, this.autocompleteTest.selectedState).then(data => {
-      console.log(data);
-      this.location = data.results[0].geometry.location.lat + ',' + data.results[0].geometry.location.lng;
-      console.log(this.location);
-      this.globalState.setState('location', this.location);
-    });
+      if(this.street.nativeElement.value.length < 3 && this.autocompleteTest.City.nativeElement.value.length < 3){
+        this.results.display();
+        return
+      }else{
+        this.geocodeService.getGeocode(this.street.nativeElement.value, this.autocompleteTest.City.nativeElement.value, this.autocompleteTest.selectedState).then(data => {
+          console.log(data);
+          this.location = data.results[0].geometry.location.lat + ',' + data.results[0].geometry.location.lng;
+          console.log(this.location);
+          this.globalState.setState('location', this.location);
+        });
+      }
+    
     setTimeout(()=>{
       console.log(this.location);
       this.tomorrowioService.getWeather(this.location).then(data => {
@@ -175,6 +182,8 @@ export class FormComponent {
         console.log(this.globalState.getState('InputState'));
         this.results.display();
     }, 1000);
+
+    this.results.checkIfinFav();
     
   }
   }
@@ -184,11 +193,13 @@ export class FormComponent {
       if ((this.street.nativeElement.value.length < 3 && this.autocompleteTest.City.nativeElement.value.length < 3 && this.autocomplete.state.nativeElement.value.length && this.autodetectLocation.nativeElement.checked === false)){
         this.renderer.removeAttribute(this.results.noData.nativeElement, 'hidden');
         console.log('no data');
+        return;
     }
 
     if(this.autodetectLocation.nativeElement.checked === true && (this.location === undefined || this.location === '')){
       this.renderer.removeAttribute(this.results.noData.nativeElement, 'hidden');
       console.log('no data');
+      return;
     }
   
     if(this.street.nativeElement.value.length >= 3 && this.autocompleteTest.City.nativeElement.value.length >= 3 && this.autocomplete.state.nativeElement.value.length >= 3 && this.autodetectLocation.nativeElement.checked === false && this.location !== undefined && this.location !== ''){
@@ -197,6 +208,7 @@ export class FormComponent {
       if(this.globalState.getState('tomorrowErrorMg') === 'Tomorrow.io hit limit'){
         this.renderer.removeAttribute(this.results.noData.nativeElement, 'hidden');
         console.log('no data');
+
       }
   
       if(this.globalState.getState('tomorrowErrorMg') !== 'Tomorrow.io hit limit'){
@@ -208,7 +220,7 @@ export class FormComponent {
         console.log('no data');
       }
      
-      
+      this.renderer.setAttribute(this.results.progress.nativeElement, 'hidden', 'true');
     }}, 1000);
     
   

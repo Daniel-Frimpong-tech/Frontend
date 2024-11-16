@@ -329,9 +329,12 @@ deleteFav(index: number){
       }else{
         this.fav = false;
         this.renderer.setAttribute(this.star.nativeElement, 'fill', '#DDDCC8');
+        this.backend.deleteData(this.chosenIndex);
       }
   
   }
+
+  chosenIndex: number = 0;
 
   checkIfinFav(){
     this.favdata = this.backend.retrievedData;
@@ -340,7 +343,8 @@ deleteFav(index: number){
       const state = item.InputState;
       return {index, city, state};
     });
-
+    
+    this.chosenIndex = this.favourite.findIndex((item: any) => item.city === this.globalState.getState('InputCity') && item.state === this.globalState.getState('InputState'));
     console.log(this.favourite);
     const city = this.globalState.getState('InputCity');
     const state = this.globalState.getState('InputState');

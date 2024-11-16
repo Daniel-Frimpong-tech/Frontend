@@ -9,7 +9,7 @@ export class PlacesService {
   constructor() {}
 
   getPlaces(input:string): Promise<any>{
-    var call = fetch(`http://localhost:3000/api/places?input=${input}`).then(response => response.json());
+    var call = fetch(`https://daniel-project-3.azurewebsites.net/api/places?input=${input}`).then(response => response.json());
     console.log(call);
     return call;
   }

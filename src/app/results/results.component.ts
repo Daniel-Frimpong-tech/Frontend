@@ -223,6 +223,8 @@ deleteFav(index: number){
   this.backend.deleteData(index);
   setTimeout(() => {
       this.insertFavorite();
+      this.resBtn.nativeElement.click();
+      this.favBtn.nativeElement.click();
   }, 500);
 }
 

@@ -16,6 +16,15 @@
             "outputPath": "dist/frontend",
             "index": "src/index.html",
             "browser": "src/main.ts",
+            "allowedCommonJsDependencies": [
+            "highcharts",
+            "highcharts/highcharts-more",
+            "highcharts/modules/exporting",
+            "highcharts/modules/boost",
+            "highcharts/modules/pattern-fill",
+            "highcharts/modules/accessibility",
+            "highcharts/modules/windbarb"
+          ],
             "polyfills": [
               "zone.js",
               "@angular/localize/init"
@@ -42,8 +51,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "5mb",
+                  "maximumError": "8mb"
                 },
                 {
                   "type": "anyComponentStyle",

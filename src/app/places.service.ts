@@ -1,4 +1,6 @@
+
 import { Injectable } from '@angular/core';
+import { environment } from '../environments/environment';
 
 
 @Injectable({
@@ -9,7 +11,7 @@ export class PlacesService {
   constructor() {}
 
   getPlaces(input:string): Promise<any>{
-    var call = fetch(`https://daniel-project-3.azurewebsites.net/api/places?input=${input}`).then(response => response.json());
+    var call = fetch(`${environment.API_BASE_URL}/api/places?input=${input}`).then(response => response.json());
     console.log(call);
     return call;
   }

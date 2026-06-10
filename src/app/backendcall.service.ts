@@ -1,5 +1,6 @@
 
 import { Injectable } from '@angular/core';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -42,7 +43,7 @@ export class BackendcallService {
     const sending = JSON.stringify(obj);
     console.log(sending);
     myHeaders.append('Content-Type', 'application/json');
-      const response = await fetch('https://daniel-project-3.azurewebsites.net/api/db', {
+      const response = await fetch(`${environment.API_BASE_URL}/api/db`, {
         method: 'POST',
         headers: myHeaders,
         mode: 'cors',
@@ -58,7 +59,7 @@ export class BackendcallService {
     console.log(this.selectedData._id);
     const selectedid = this.selectedData._id;
     try {
-      const response = await fetch(`https://daniel-project-3.azurewebsites.net/api/delete/${selectedid}`, {
+      const response = await fetch(`${environment.API_BASE_URL}/api/delete/${selectedid}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -73,7 +74,7 @@ export class BackendcallService {
   }
 
   async getData(){
-    const call = await fetch('https://daniel-project-3.azurewebsites.net/api/db')
+    const call = await fetch(`${environment.API_BASE_URL}/api/db`)
     const data = await call.json();
     console.log(data);
     this.retrieveData(data);

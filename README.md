@@ -25,3 +25,10 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+## Configuration
+
+- Do NOT commit API keys or tokens. This project now reads third-party keys and backend base URL from `src/environments/environment.ts`.
+- Set `GOOGLE_MAPS_KEY`, `GOOGLE_API_KEY`, and `IPINFO_TOKEN` in `src/environments/environment.ts` for local development, or provide them through your CI/CD environment for production builds (use `src/environments/environment.prod.ts`).
+
+Note: After updating keys, rebuild the frontend with `ng build` or run `ng serve` for development.

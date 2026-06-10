@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -8,7 +9,9 @@ export class IpdataService {
   constructor() { }
 
   getIpData(): Promise<any>{
-    var Ipdata = fetch('https://ipinfo.io/json?token=40e97a1962ba1e').then(response => response.json());
+    const token = environment.IPINFO_TOKEN;
+    const url = `https://ipinfo.io/json` + (token ? `?token=${token}` : '');
+    var Ipdata = fetch(url).then(response => response.json());
     console.log(Ipdata);
     return Ipdata;
   }
